@@ -25,12 +25,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      PORT: ${PORT:-4000}
+      PORT: 4000
       DATABASE_URL: postgresql://${POSTGRES_USER:-chatuser}:${POSTGRES_PASSWORD:-chatpassword}@postgres:5432/${POSTGRES_DB:-chatapp}?schema=public
       JWT_SECRET: ${JWT_SECRET:-change-this-secret-in-production}
       CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:3000}
     ports:
-      - "${PORT:-4000}:4000"
+      - "${BACKEND_PORT:-4000}:4000"
 
   frontend:
     image: ghcr.io/${GITHUB_OWNER:-bigopen-shantanu}/chat-app-frontend:latest
