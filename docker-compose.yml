@@ -4,15 +4,15 @@ services:
     container_name: chat-app-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: chatuser
-      POSTGRES_PASSWORD: chatpassword
-      POSTGRES_DB: chatapp
+      POSTGRES_USER: ${POSTGRES_USER:-chatuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chatpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-chatapp}
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - chat_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chatuser -d chatapp"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-chatuser} -d ${POSTGRES_DB:-chatapp}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,12 +27,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      PORT: 4000
-      DATABASE_URL: postgresql://chatuser:chatpassword@postgres:5432/chatapp?schema=public
+      PORT: ${PORT:-4000}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatuser}:${POSTGRES_PASSWORD:-chatpassword}@postgres:5432/${POSTGRES_DB:-chatapp}?schema=public
       JWT_SECRET: ${JWT_SECRET:-change-this-secret-in-production}
       CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:3000}
     ports:
-      - "4000:4000"
+      - "${PORT:-4000}:4000"
 
   frontend:
     image: ghcr.io/${GITHUB_OWNER:-bigopen-shantanu}/chat-app-frontend:latest
@@ -43,7 +43,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "3000:80"
+      - "${FRONTEND_PORT:-3000}:80"
 
 volumes:
   chat_pg_data:
