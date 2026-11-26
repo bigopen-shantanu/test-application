@@ -16,7 +16,12 @@ RUN npm run build
 
 FROM nginx:1.27-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV BACKEND_URL=http://backend:4000
+
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY runtime-env.sh /docker-entrypoint.d/40-runtime-env.sh
+RUN chmod +x /docker-entrypoint.d/40-runtime-env.sh
+
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80

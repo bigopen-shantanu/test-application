@@ -1,4 +1,8 @@
-const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:4000');
+const runtimeEnv = typeof window !== 'undefined' ? window.__ENV__ || {} : {};
+const API_URL =
+  runtimeEnv.VITE_API_URL ||
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? '' : 'http://localhost:4000');
 
 const defaultWsUrl = () => {
   if (!import.meta.env.PROD) return 'ws://localhost:4000';
@@ -6,7 +10,8 @@ const defaultWsUrl = () => {
   return `${proto}//${window.location.host}/ws`;
 };
 
-export const WS_URL = import.meta.env.VITE_WS_URL || defaultWsUrl();
+export const WS_URL =
+  runtimeEnv.VITE_WS_URL || import.meta.env.VITE_WS_URL || defaultWsUrl();
 
 async function request(path, { method = 'GET', body, token } = {}) {
   const headers = { 'Content-Type': 'application/json' };
